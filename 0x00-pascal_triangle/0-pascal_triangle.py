@@ -1,8 +1,24 @@
 #!/usr/bin/python3
-"""function that returns a list integers representing the Pascal’s triangle"""
+"""Module to generate Pascal’s triangle"""
 
 
 def pascal_triangle(n):
+    """
+    Generate Pascal's triangle of size n.
+
+    Pascal's triangle is a triangular array of the binomial coefficients.
+    Each row represents the coefficients in the expansion of (a + b)^k.
+
+    Args:
+        n (int): The number of rows in Pascal's triangle.
+
+    Returns:
+        List[List[int]]: A list of integers representing Pascal's triangle.
+
+    Example:
+        >>> pascal_triangle(5)
+        [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]
+    """
     triangle = []
     for i in range(n):
         row = []
@@ -13,6 +29,3 @@ def pascal_triangle(n):
                 row.append(triangle[i - 1][j] + triangle[i - 1][j - 1])
         triangle.append(row)
     return triangle
-
-
-result = pascal_triangle(5)
