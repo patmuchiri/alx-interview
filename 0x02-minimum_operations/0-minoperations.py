@@ -1,14 +1,16 @@
 #!/usr/bin/python3
 def minOperations(n):
     """
-    Calculate the minimum number of operations needed to obtain exactly n 'H' characters
-    in a text file starting with a single 'H'. The operations are Copy All and Paste.
+    Calculate the minimum number of operations needed to obtain exactly
+    n 'H' characters in a text file starting with a single 'H'. The operations
+    are Copy All and Paste.
 
     Parameters:
     n (int): The target number of 'H' characters.
 
     Returns:
-    int: The minimum number of operations needed, or 0 if n is impossible to achieve.
+    int: The minimum number of operations needed, or 0 if n is impossible
+    to achieve.
     """
     if n <= 1:
         return 0
@@ -25,6 +27,7 @@ def minOperations(n):
         factor += 1  # Move to the next possible factor
 
     return operations
+
 
 # Example usage and testing
 if __name__ == "__main__":
