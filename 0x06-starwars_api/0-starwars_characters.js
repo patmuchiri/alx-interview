@@ -14,8 +14,22 @@ if (!movieId) {
 // Construct the URL for the movie details endpoint
 const url = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
 
-// Fetch movie details
-request(url, function (error, response, body) {
+// Function to fetch character data
+const fetchCharacter = (characterUrl) => {
+  return new Promise((resolve, reject) => {
+    request(characterUrl, (err, res, body) => {
+      if (err) {
+        reject(err);
+      } else {
+        const character = JSON.parse(body);
+        resolve(character.name);
+      }
+    });
+  });
+};
+
+// Fetch movie details and characters
+request(url, async (error, response, body) => {
   if (error) {
     console.error('Error:', error);
   } else {
@@ -24,18 +38,16 @@ request(url, function (error, response, body) {
 
     // Check if the film exists (valid ID)
     if (film.title) {
-      // Loop through each character URL in the 'characters' list
-      film.characters.forEach(characterUrl => {
-        // Fetch character details
-        request(characterUrl, function (err, res, characterBody) {
-          if (err) {
-            console.error('Error:', err);
-          } else {
-            const character = JSON.parse(characterBody);
-            console.log(character.name); // Print character's name
-          }
-        });
-      });
+      try {
+        // Fetch all characters and print their names in the same order
+        const characterPromises = film.characters.map(fetchCharacter);
+        const characters = await Promise.all(characterPromises);
+
+        // Print each character name
+        characters.forEach(character => console.log(character));
+      } catch (err) {
+        console.error('Error fetching characters:', err);
+      }
     } else {
       console.log('Movie not found');
     }
