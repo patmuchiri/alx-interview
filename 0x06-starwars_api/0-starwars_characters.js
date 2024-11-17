@@ -1,39 +1,31 @@
 #!/usr/bin/node
 
-const request = require('request')
+const request = require('request');  // Using the request module for HTTP requests
 
-const movieId = process.argv[2] // Get movie ID from command-line argument
+// Get the page number from command-line arguments
+const page = process.argv[2];
 
-// Check if movieId is provided
-if (!movieId) {
-  console.log('Usage: node script.js <movie_id>')
-  process.exit(1)
-}
+// Construct the URL to fetch the character data from SWAPI
+const url = `https://swapi.dev/api/people/?page=${page}`;
 
-// URL for the API request
-const url = `https://swapi.dev/api/films/${movieId}/`
+// Make the HTTP request to the SWAPI API
+request(url, function (error, response, body) {
+  if (error) {
+    console.error('Error:', error);  // Print error if any
+  } else {
+    const data = JSON.parse(body);  // Parse the response body as JSON
+    const characters = data.results;  // Extract character results from the response
+    
+    // Loop through the characters and print their names
+    characters.forEach((character) => {
+      console.log(character.name);  // Print each character's name
+    });
 
-function starWarsMovieCharacters (url) {
-  request(url, function (error, response, body) {
-    if (error) {
-      console.log(`Failed to retrieve movie with ID ${movieId}: ${error}`)
-      return
+    // If there is a next page, recursively call the function to fetch it
+    if (data.next) {
+      const nextPage = data.next.split('page=')[1];  // Extract next page number from URL
+      process.argv[2] = nextPage;  // Set next page number to continue fetching
+      require('child_process').execSync(`./0-starwars_characters.js ${nextPage}`);  // Recursive call
     }
-
-    const movie = JSON.parse(body)
-    console.log(`Movie Title: ${movie.title}`)
-    console.log('Characters in this movie:')
-
-    // Example of how to print character names
-    movie.characters.forEach(function (characterUrl) {
-      request(characterUrl, function (err, res, body) {
-        if (err) return console.log(err)
-        const character = JSON.parse(body)
-        console.log(character.name)
-      })
-    })
-  })
-}
-
-starWarsMovieCharacters(url)
-
+  }
+});
