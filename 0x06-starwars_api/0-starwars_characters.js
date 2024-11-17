@@ -1,31 +1,37 @@
 #!/usr/bin/node
 
-const request = require('request');  // Using the request module for HTTP requests
+const request = require('request');
 
-// Get the page number from command-line arguments
-const page = process.argv[2];
+// Get the Movie ID from command-line argument
+const movieId = process.argv[2];
 
-// Construct the URL to fetch the character data from SWAPI
-const url = `https://swapi.dev/api/people/?page=${page}`;
+// Construct the URL for the movie details endpoint
+const url = `https://swapi-api.alx-tools.com/api/films/${movieId}/`;
 
-// Make the HTTP request to the SWAPI API
+// Fetch movie details
 request(url, function (error, response, body) {
   if (error) {
-    console.error('Error:', error);  // Print error if any
+    console.error('Error:', error);
   } else {
-    const data = JSON.parse(body);  // Parse the response body as JSON
-    const characters = data.results;  // Extract character results from the response
-    
-    // Loop through the characters and print their names
-    characters.forEach((character) => {
-      console.log(character.name);  // Print each character's name
-    });
+    const film = JSON.parse(body);  // Parse the response body as JSON
 
-    // If there is a next page, recursively call the function to fetch it
-    if (data.next) {
-      const nextPage = data.next.split('page=')[1];  // Extract next page number from URL
-      process.argv[2] = nextPage;  // Set next page number to continue fetching
-      require('child_process').execSync(`./0-starwars_characters.js ${nextPage}`);  // Recursive call
+    // Check if the film exists (valid ID)
+    if (film.title) {
+      // Loop through each character URL in the 'characters' list
+      film.characters.forEach(characterUrl => {
+        // Fetch character details
+        request(characterUrl, function (err, res, characterBody) {
+          if (err) {
+            console.error('Error:', err);
+          } else {
+            const character = JSON.parse(characterBody);
+            console.log(character.name);  // Print character's name
+          }
+        });
+      });
+    } else {
+      console.log('Movie not found');
     }
   }
 });
+
