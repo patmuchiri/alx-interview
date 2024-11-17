@@ -1,0 +1,12 @@
+{
+  "name": "my-cool-package",
+  "devDependencies": {
+    "semistandard": "*"
+  },
+  "scripts": {
+    "test": "semistandard && node my-normal-tests-littered-with-semicolons.js"
+  },
+  "dependencies": {
+    "babel-eslint": "^10.1.0"
+  }
+}

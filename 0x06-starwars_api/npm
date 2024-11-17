@@ -1,0 +1,3 @@
+$ npm test
+Error: Code style check failed:
+  lib/torrent.js:950:11: Expected '===' and instead saw '=='.
