@@ -1,34 +1,39 @@
-#!/usr/bin/node
+#!/usr/bin/env node
 
-const request = require('request');
+const request = require('request')
 
-if (process.argv.length !== 3) {
-  console.log("Usage: script.js <movie_id>");
-  process.exit(1);
+const movieId = process.argv[2] // Get movie ID from command-line argument
+
+// Check if movieId is provided
+if (!movieId) {
+  console.log('Usage: node script.js <movie_id>')
+  process.exit(1)
 }
 
+// URL for the API request
+const url = `https://swapi.dev/api/films/${movieId}/`
 
-const starWarsMovieCharacters = (movieId) => {
-  const URL = "https://swapi-api.alx-tools.com/api/films";
-  request('${URL}/${movieId}', (err,_, body) => {
-    if (err) {
-      console.log('Failed to retrieve movie with ID ${movieId}:', err);
-      return;
+function starWarsMovieCharacters (url) {
+  request(url, function (error, response, body) {
+    if (error) {
+      console.log(`Failed to retrieve movie with ID ${movieId}: ${error}`)
+      return
     }
-    const charactersUrl = JSON.parse(body).characters;
-    const charNames = charactersUrl.map(url => new Promise((resolve, reject) => {
-      request(url, (err, _,body) => {
-        if (err) {
-	  reject(err);
-	}
-	resolve(JSON.parse(body).name);
-      });
-    }));
-    Promise.all(charNames)
-      .then(names => console.log(names.join('\n')))
-      .catch(err => console.log(err));
-  });
+
+    const movie = JSON.parse(body)
+    console.log(`Movie Title: ${movie.title}`)
+    console.log('Characters in this movie:')
+
+    // Example of how to print character names
+    movie.characters.forEach(function (characterUrl) {
+      request(characterUrl, function (err, res, body) {
+        if (err) return console.log(err)
+        const character = JSON.parse(body)
+        console.log(character.name)
+      })
+    })
+  })
 }
 
-const movieId = process.argv[2];
-starWarsMovieCharacters(movieId);
+starWarsMovieCharacters(url)
+
